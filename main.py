@@ -248,7 +248,7 @@ class MeasurementSystem:
                 writer.writerow([
                     measurement['machine'],
                     measurement['measurement_number'],
-                    f"{measurement['length_in']:.3f}",
+                    f"{measurement['length_in']:.4f}",
                     measurement['option'],  # Include option in CSV
                     measurement['timestamp']
                 ])
