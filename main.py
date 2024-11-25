@@ -110,7 +110,7 @@ class MeasurementSystem:
         if not os.path.exists(self.csv_file):
             with open(self.csv_file, 'w', newline='') as f:
                 writer = csv.writer(f)
-                writer.writerow(['machine', 'measurement_number', 'length_mm', 'option', 'timestamp'])
+                writer.writerow(['machine', 'measurement_number', 'length_in', 'option', 'timestamp'])
     
     def update_camera(self):
         if self.cap is not None and self.cap.isOpened():
