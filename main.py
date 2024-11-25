@@ -138,6 +138,31 @@ class MeasurementSystem:
                         int(self.current_point[1] * self.original_height / self.canvas.winfo_height())
                     )
                     cv2.line(frame_rgb, start_scaled, current_scaled, (255, 0, 0), 2)
+
+                    # Calculate the direction vector of the main line
+                    direction_vector = (current_scaled[0] - start_scaled[0], current_scaled[1] - start_scaled[1])
+                    # Calculate the length of the main line
+                    length = np.sqrt(direction_vector[0]**2 + direction_vector[1]**2)
+                    # Normalize the direction vector
+                    if length != 0:
+                        direction_vector = (direction_vector[0] / length, direction_vector[1] / length)
+
+                    # Calculate perpendicular direction
+                    perpendicular_vector = (-direction_vector[1], direction_vector[0])  # Rotate 90 degrees
+
+                    # Draw perpendicular lines at start and end points
+                    perp_length = 40  # Length of the perpendicular lines
+                    start_perp_start = (int(start_scaled[0] + perpendicular_vector[0] * perp_length), 
+                                         int(start_scaled[1] + perpendicular_vector[1] * perp_length))
+                    start_perp_end = (int(start_scaled[0] - perpendicular_vector[0] * perp_length), 
+                                      int(start_scaled[1] - perpendicular_vector[1] * perp_length))
+                    current_perp_start = (int(current_scaled[0] + perpendicular_vector[0] * perp_length), 
+                                          int(current_scaled[1] + perpendicular_vector[1] * perp_length))
+                    current_perp_end = (int(current_scaled[0] - perpendicular_vector[0] * perp_length), 
+                                        int(current_scaled[1] - perpendicular_vector[1] * perp_length))
+
+                    cv2.line(frame_rgb, start_perp_start, start_perp_end, (0, 255, 0), 2)  # Perpendicular at start
+                    cv2.line(frame_rgb, current_perp_start, current_perp_end, (0, 255, 0), 2)  # Perpendicular at end
                 
                 # Convert to PhotoImage
                 self.frame_rgb = cv2.resize(frame_rgb, (1280, 960))
