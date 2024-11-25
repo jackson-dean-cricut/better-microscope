@@ -26,6 +26,7 @@ class MeasurementSystem:
         self.current_point = None
         self.measurements: List[dict] = []
         self.current_filename = ""
+        self.measurement_in_progress = False  # New flag to track measurement state
         
 
         # Setup GUI
@@ -116,11 +117,15 @@ class MeasurementSystem:
         if self.cap is not None and self.cap.isOpened():
             ret, frame = self.cap.read()
             if ret:
-                self.frame = frame
+                # Only update the camera feed if not measuring
+                if not self.measurement_in_progress:
+                    self.frame = frame
+
                 # Convert frame to RGB for tkinter
-                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                frame_rgb = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
                 # Store original dimensions
                 self.original_height, self.original_width = frame_rgb.shape[:2]
+                
                 # Draw current measurement line if exists
                 if self.start_point is not None and self.current_point is not None:
                     # Scale points back to original dimensions
@@ -170,6 +175,7 @@ class MeasurementSystem:
         if self.calibrating or self.measuring:
             self.start_point = (event.x, event.y)
             self.current_point = self.start_point
+            self.measurement_in_progress = True
     
     def on_drag(self, event):
         if (self.calibrating or self.measuring) and self.start_point:
@@ -268,9 +274,11 @@ class MeasurementSystem:
         
         def on_save():
             confirm_save(None)
+            self.measurement_in_progress = False  # Reset flag after saving
             dialog.destroy()
         
         def on_cancel():
+            self.measurement_in_progress = False  # Reset flag on cancel
             dialog.destroy()
         
         # Create dialog
