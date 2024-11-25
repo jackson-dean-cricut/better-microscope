@@ -164,6 +164,25 @@ class MeasurementSystem:
                     cv2.line(frame_rgb, start_perp_start, start_perp_end, (0, 255, 0), 2)  # Perpendicular at start
                     cv2.line(frame_rgb, current_perp_start, current_perp_end, (0, 255, 0), 2)  # Perpendicular at end
                 
+                # Draw scale if calibration factor is valid
+                if self.calibration_factor is not None:
+                    # Define scale height in pixels
+                    scale_height_in = 0.005  # inches
+                    scale_height_pixels = scale_height_in / self.calibration_factor  # Convert to pixels
+                    
+                    # Define scale position
+                    scale_x = 10  # X position in pixels
+                    scale_y_start = self.original_height - 10  # Y position in pixels
+                    scale_y_end = int(scale_y_start - scale_height_pixels)  # Calculate end position
+                    
+                    # Draw the "I" shape
+                    cv2.line(frame_rgb, (scale_x, scale_y_start), (scale_x, scale_y_end), (255, 0, 0), 2)  # Vertical line
+                    cv2.line(frame_rgb, (scale_x - 5, scale_y_start), (scale_x + 5, scale_y_start), (255, 0, 0), 2)  # Top horizontal line
+                    cv2.line(frame_rgb, (scale_x - 5, scale_y_end), (scale_x + 5, scale_y_end), (255, 0, 0), 2)  # Bottom horizontal line
+
+                    # Draw "0.005" text
+                    cv2.putText(frame_rgb, "0.005\"", (scale_x + 10, scale_y_start), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
+                
                 # Convert to PhotoImage
                 self.frame_rgb = cv2.resize(frame_rgb, (1280, 960))
                 self.photo = tk.PhotoImage(data=cv2.imencode('.ppm', self.frame_rgb)[1].tobytes())
